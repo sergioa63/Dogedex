@@ -1,17 +1,18 @@
 package com.example.dogedex.doglist
 
 import com.example.dogedex.Dog
+import com.example.dogedex.api.ApiResponceStatus
 import com.example.dogedex.api.DogsApi.retrofitService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.dogedex.api.dto.DogDTOMapper
+import com.example.dogedex.api.makeNetworkCall as makeNetworkCall
 
 class DogRepository {
-    suspend fun downloadDogs() : List<Dog> {
-        return withContext(Dispatchers.IO) {
+    suspend fun downloadDogs() : ApiResponceStatus<List<Dog>> {
+        return makeNetworkCall {
             val dogListApiResponse = retrofitService.getAllDogs()
-            dogListApiResponse?.let {
-                it.data.dogs
-            }
+            val docDtoList = dogListApiResponse.data.dogs
+            val dogDTOMapper = DogDTOMapper()
+            dogDTOMapper.fromDogDTOListToDogDomainList(docDtoList)
         }
     }
 
