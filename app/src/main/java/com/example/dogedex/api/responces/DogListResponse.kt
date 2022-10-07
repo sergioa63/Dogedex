@@ -1,4 +1,4 @@
-package com.example.dogedex.api
+package com.example.dogedex.api.responces
 
 import com.example.dogedex.api.dto.DogDTO
 

@@ -1,5 +1,6 @@
 package com.example.dogedex.auth
 
+import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Patterns
@@ -9,10 +10,26 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.dogedex.R
 import com.example.dogedex.databinding.FragmentSingUpBinding
+import com.example.dogedex.isValidEmail
 
 class SingUpFragment : Fragment() {
 
     private lateinit var binding : FragmentSingUpBinding
+
+    interface SingUpFragmentActions {
+        fun onSingUpFieldsValidated(email: String, password : String, passwordConfirmation : String)
+    }
+
+    private lateinit var singUpFragmentActions: SingUpFragmentActions
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        singUpFragmentActions = try {
+            context as SingUpFragmentActions
+        } catch (e :ClassCastException){
+            throw  ClassCastException("$context must implement LoginFragmentActions")
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,9 +70,7 @@ class SingUpFragment : Fragment() {
             binding.passwordInput.error = getString(R.string.passwords_do_not_match)
             return
         }
+        singUpFragmentActions.onSingUpFieldsValidated(email,password,passwordConfirmation)
     }
 
-    private fun isValidEmail(email: String?) : Boolean {
-        return !email.isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
 }
